@@ -16,28 +16,61 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+var products = new List<Product>();
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/products", () =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+return products;
+});
+
+app.MapGet("/products/{id}", (int id) =>
+{
+var product = products.FirstOrDefault(p => p.Id == id);
+return product;
+});
+
+app.MapPost("/products", (Product product) =>
+{
+products.Add(product);
+return Results.Ok();
+});
+
+app.MapPut("/products/{id}", (int id, Product product) =>
+{
+var existingProduct = products.FirstOrDefault(p => p.Id == id);
+if (existingProduct != null)
+{
+existingProduct.Name = product.Name;
+existingProduct.Precio = product.Precio;
+return Results.Ok();
+}
+else
+{
+return Results.NotFound();
+}
+});
+
+app.MapDelete("/products/{id}", (int id) =>
+{
+var existingProduct = products.FirstOrDefault(p => p.Id == id);
+if (existingProduct != null)
+{
+products.Remove(existingProduct);
+return Results.Ok();
+}
+else
+{
+return Results.NotFound();
+}
+});
 
 app.Run();
 
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+internal class Product
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public decimal Precio { get; set; }
 }
