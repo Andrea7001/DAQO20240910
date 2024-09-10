@@ -41,7 +41,7 @@ var existingProduct = products.FirstOrDefault(p => p.Id == id);
 if (existingProduct != null)
 {
 existingProduct.Name = product.Name;
-existingProduct.Precio = product.Precio;
+existingProduct.Price = product.Price;
 return Results.Ok();
 }
 else
@@ -72,5 +72,5 @@ internal class Product
 
     public string Name { get; set; }
 
-    public decimal Precio { get; set; }
+    public decimal Price { get; set; }
 }
